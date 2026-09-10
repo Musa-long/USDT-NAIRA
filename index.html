@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Buy USDT with Naira">
+  <title>Buy USDT with Naira</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <div class="usdt-logo">₮</div>
+    <div><strong>USDT</strong><span>NAIRA EXCHANGE</span></div>
+  </div>
+  <a class="admin-link" href="/admin.html">Admin</a>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="hero-copy">
+      <div class="pill">FAST • SIMPLE • SECURE</div>
+      <h1><span>BUY USDT</span><br>WITH NAIRA</h1>
+      <p>Enter your Naira amount, provide your USDT wallet address and place your order.</p>
+    </div>
+
+    <div class="card exchange-card">
+      <div class="card-title">
+        <div class="coin-icon">₮</div>
+        <div>
+          <h2>Buy USDT</h2>
+          <p>Current rate</p>
+        </div>
+        <div class="rate" id="rate">₦— / USDT</div>
+      </div>
+
+      <label>Naira amount</label>
+      <div class="input-wrap">
+        <span>₦</span>
+        <input id="naira" type="number" min="1" step="1" placeholder="Enter amount in Naira">
+      </div>
+
+      <label>USDT you will receive</label>
+      <div class="receive-box">
+        <strong id="usdt">0.000000</strong><span>USDT</span>
+      </div>
+
+      <label>USDT wallet address</label>
+      <input id="wallet" class="plain-input" type="text" placeholder="Paste your USDT wallet address">
+
+      <div class="network-note">Network: <strong id="network">TRC20</strong> — Make sure your wallet supports the selected network.</div>
+
+      <button id="buyBtn" class="buy-btn">BUY USDT NOW</button>
+      <p id="error" class="error"></p>
+    </div>
+  </section>
+
+  <section id="payment" class="payment-section hidden">
+    <div class="card payment-card">
+      <div class="success">✓ ORDER CREATED</div>
+      <h2>Make Your Naira Payment</h2>
+      <p class="muted">Use the account below. After payment, keep your order reference as proof.</p>
+      <div class="order-ref">Order: <strong id="orderRef">—</strong></div>
+
+      <div class="payment-grid">
+        <div><span>Bank</span><strong id="bankName">—</strong></div>
+        <div><span>Account name</span><strong id="accountName">—</strong></div>
+        <div><span>Account number</span><strong id="accountNumber">—</strong></div>
+        <div><span>Amount to pay</span><strong id="payAmount">—</strong></div>
+      </div>
+
+      <div class="warning">⚠️ Do not send USDT to the payment account. This section is for your Naira payment only.</div>
+      <button class="secondary" onclick="window.location.href='https://wa.me/2349167452777?text=Hello%2C%20I%20created%20a%20USDT%20order.%20My%20order%20reference%20is%20'+encodeURIComponent(document.getElementById('orderRef').textContent)">Contact Customer Care on WhatsApp</button>
+    </div>
+  </section>
+</main>
+
+<footer>© 2026 USDT Naira Exchange • Trade responsibly</footer>
+<script src="/app.js"></script>
+
+<section style="max-width:720px;margin:30px auto;padding:22px;background:#fff;border-radius:14px;box-shadow:0 2px 14px #0001">
+<h2>Buy USDT</h2>
+<p>Current rate: <strong id="liveRate">Loading...</strong></p>
+<label>Naira amount</label>
+<input id="nairaAmount" type="number" min="1" step="0.01" placeholder="Enter Naira amount" style="width:100%;box-sizing:border-box;padding:12px">
+<p>USDT you'll receive: <strong id="usdtAmount">0</strong></p>
+<label>USDT wallet address</label>
+<input id="walletAddress" type="text" placeholder="Enter your USDT wallet address" style="width:100%;box-sizing:border-box;padding:12px">
+<button id="buyBtn" style="padding:12px 18px;margin-top:10px">Buy USDT</button>
+<div id="buyResult" style="margin-top:12px"></div>
+</section>
+<script>
+(async function(){
+ const rateEl=document.getElementById("liveRate"), n=document.getElementById("nairaAmount"), u=document.getElementById("usdtAmount");
+ let rate=0;
+ try{const s=await fetch("/api/settings").then(r=>r.json());rate=Number(s.rate);rateEl.textContent="₦"+rate.toLocaleString()+" per USDT"}catch(e){rateEl.textContent="Unavailable"}
+ n.addEventListener("input",()=>u.textContent=rate>0?(Number(n.value||0)/rate).toFixed(6):"0");
+ document.getElementById("buyBtn").addEventListener("click",async()=>{
+   const out=document.getElementById("buyResult");
+   try{
+     const r=await fetch("/api/orders",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({nairaAmount:Number(n.value),walletAddress:document.getElementById("walletAddress").value})});
+     const d=await r.json(); if(!r.ok) throw new Error(d.error||"Order failed");
+     out.innerHTML="<strong>Order created: "+d.orderRef+"</strong><br>USDT: "+d.usdtAmount+"<br>Rate: ₦"+d.rate.toLocaleString()+"<br>Bank: "+d.payment.bankName+"<br>Account name: "+d.payment.accountName+"<br>Account number: "+d.payment.accountNumber+"<br>Network: "+d.payment.network;
+   }catch(e){out.textContent=e.message}
+ });
+})();
+</script>
+
+</body>
+</html>
