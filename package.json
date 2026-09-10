@@ -1,0 +1,16 @@
+{
+  "name": "usdt-naira-exchange",
+  "version": "1.1.0",
+  "description": "USDT to Naira exchange website with admin-controlled rate and payment details",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "pg": "^8.16.3"
+  }
+}
